@@ -17,21 +17,18 @@ public abstract class Auditable implements Serializable {
     @GeneratedValue(generator = "sequence",
             strategy = GenerationType.SEQUENCE)
     @SequenceGenerator(name = "sequence", allocationSize = 10)
-    @Getter
-    @Setter
+    @Getter @Setter
     private Long id;
 
     @Temporal(TemporalType.TIMESTAMP)
     @CreatedDate
     @Column(nullable = false, updatable = false)
-    @Getter
-    @Setter
+    @Getter @Setter
     private Date createAt = new Date();
 
     @Temporal(TemporalType.TIMESTAMP)
     @LastModifiedDate
     @Column(nullable = false)
-    @Getter
-    @Setter
+    @Getter @Setter
     private Date updatedAt = new Date();
 }

@@ -1,10 +1,10 @@
 package com.foolmind.game.model;
 
-import com.sun.istack.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.util.*;
 
 @Entity
@@ -19,7 +19,7 @@ public class Game extends Auditable {
     @NotNull
     private GameMode gameMode;
 
-    @OneToMany(mappedBy = "game")
+    @OneToMany(mappedBy = "game", cascade = CascadeType.ALL)
     @Getter @Setter
     private List<Round> rounds = new ArrayList<>();
 
@@ -37,4 +37,12 @@ public class Game extends Auditable {
     @ManyToMany(cascade = CascadeType.ALL)
     @Getter @Setter
     private Map<Player, Stat> playerStats = new HashMap<>();
+
+    @Enumerated(EnumType.STRING)
+    @Getter @Setter
+    private GameStatus gameStatus;
+
+    @ManyToMany
+    @Getter @Setter
+    private Set<Player> readyPlayers = new HashSet<>();
 }
