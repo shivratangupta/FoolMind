@@ -36,4 +36,15 @@ public class Round extends Auditable {
     @NotNull
     @Getter @Setter
     private int roundNumber;
+
+    // default constructor for spring boot
+    public Round() {
+    }
+
+    // parameterized constructor
+    public Round(@NotNull Game game, @NotNull Question question, @NotNull int roundNumber) {
+        this.game = game;
+        this.question = question;
+        this.roundNumber = roundNumber;
+    }
 }

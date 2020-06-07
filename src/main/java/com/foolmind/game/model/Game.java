@@ -45,4 +45,15 @@ public class Game extends Auditable {
     @ManyToMany
     @Getter @Setter
     private Set<Player> readyPlayers = new HashSet<>();
+
+    // default constructor for spring boot
+    public Game() {
+    }
+
+    // parameterized constructor
+    public Game(@NotNull GameMode gameMode, @NotNull Player leader, GameStatus gameStatus) {
+        this.gameMode = gameMode;
+        this.leader = leader;
+        this.gameStatus = gameStatus;
+    }
 }

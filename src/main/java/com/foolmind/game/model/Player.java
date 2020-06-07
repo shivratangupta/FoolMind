@@ -30,9 +30,11 @@ public class Player extends User {
     @Getter @Setter
     private Set<Game> games = new HashSet<>();
 
+    // default constructor for spring
     public Player() {
     }
 
+    // Builder Pattern
     private Player(Builder builder) {
         setEmail(builder.email);
         setSaltedHashedPassword(builder.saltedHashedPassword);

@@ -6,5 +6,4 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "contentwriters")
 public class ContentWriter extends Employee {
-
 }

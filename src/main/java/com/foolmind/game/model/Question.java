@@ -29,9 +29,11 @@ public class Question extends Auditable {
     @Getter @Setter
     private GameMode gameMode;
 
+    // default constructor for spring boot
     public Question() {
     }
 
+    // parameterized constructor
     public Question(@NotBlank String question, @NotBlank String correctAnswer, @NotNull GameMode gameMode) {
         this.question = question;
         this.correctAnswer = correctAnswer;
