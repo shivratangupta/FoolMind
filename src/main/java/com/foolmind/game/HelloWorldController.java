@@ -36,15 +36,20 @@ public class HelloWorldController {
     // get request to populate the database
     @GetMapping("/populate")
     public String populateDB() {
+        playerRepository.deleteAll();
+        questionRepository.deleteAll();
+        gameRepository.deleteAll();
+        roundRepository.deleteAll();
+        adminRepository.deleteAll();
         Player reyaan = new Player.Builder()
-                .alias("ajayeh")
-                .email("ajayesh@gmail.com")
+                .alias("reyaan")
+                .email("reyaan@gmail.com")
                 .saltedHashedPassword("password")
                 .build();
         playerRepository.save(reyaan);
         Player shriyan = new Player.Builder()
-                .alias("areana")
-                .email("areana@gmail.com")
+                .alias("shriyan")
+                .email("shriyan@gmail.com")
                 .saltedHashedPassword("password")
                 .build();
         playerRepository.save(shriyan);

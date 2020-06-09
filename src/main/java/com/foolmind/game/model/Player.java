@@ -1,7 +1,10 @@
 package com.foolmind.game.model;
 
+import com.fasterxml.jackson.annotation.JsonIdentityReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.validator.constraints.URL;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
@@ -16,17 +19,21 @@ public class Player extends User {
     @Getter @Setter
     private String alias;
 
+    @URL
     @Getter @Setter
-    private String psychFaceURL;
+    private String foolFaceURL;
 
+    @URL
     @Getter @Setter
     private String picURL;
 
     @OneToOne(cascade = CascadeType.ALL)
+    @JsonManagedReference
     @Getter @Setter
     private Stat stat = new Stat();
 
     @ManyToMany(mappedBy = "players")
+    @JsonIdentityReference
     @Getter @Setter
     private Set<Game> games = new HashSet<>();
 
@@ -39,7 +46,7 @@ public class Player extends User {
         setEmail(builder.email);
         setSaltedHashedPassword(builder.saltedHashedPassword);
         setAlias(builder.alias);
-        setPsychFaceURL(builder.psychFaceURL);
+        setFoolFaceURL(builder.foolFaceURL);
         setPicURL(builder.picURL);
     }
 
@@ -47,7 +54,7 @@ public class Player extends User {
         private @Email @NotBlank String email;
         private @NotBlank String saltedHashedPassword;
         private @NotBlank String alias;
-        private String psychFaceURL;
+        private String foolFaceURL;
         private String picURL;
 
         public Builder() {
@@ -68,8 +75,8 @@ public class Player extends User {
             return this;
         }
 
-        public Builder psychFaceURL(String val) {
-            psychFaceURL = val;
+        public Builder foolFaceURL(String val) {
+            foolFaceURL = val;
             return this;
         }
 

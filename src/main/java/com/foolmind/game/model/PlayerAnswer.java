@@ -1,5 +1,7 @@
 package com.foolmind.game.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIdentityReference;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -13,11 +15,13 @@ import javax.validation.constraints.NotNull;
 @Table(name = "playeranswers")
 public class PlayerAnswer extends Auditable {
     @ManyToOne
+    @JsonBackReference
     @NotNull
     @Getter @Setter
     private Round round;
 
     @ManyToOne
+    @JsonIdentityReference
     @NotNull
     @Getter @Setter
     private Player player;
