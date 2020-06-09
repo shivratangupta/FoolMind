@@ -27,6 +27,8 @@ public class HelloWorldController {
     private GameRepository gameRepository;
     @Autowired
     private RoundRepository roundRepository;
+    @Autowired
+    private UserRepository userRepository;
 
     @GetMapping("/")
     public String hello() {
@@ -95,10 +97,22 @@ public class HelloWorldController {
         return playerRepository.findAll();
     }
 
-    // shows the player which hava a given id
+    // shows the player which have a given id
     @GetMapping("/player/{id}")
     public Optional<Player> getPlayerById(@PathVariable(name = "id") Long id) {
         return playerRepository.findById(id);
+    }
+
+    // shows the list of all the users
+    @GetMapping("/users")
+    public List<User> getAllUsers() {
+        return userRepository.findAll();
+    }
+
+    // shows the user which have a given id
+    @GetMapping("/user/{id}")
+    public Optional<User> getUserById(@PathVariable(name = "id") Long id) {
+        return userRepository.findById(id);
     }
 
     // shows the list of all the game

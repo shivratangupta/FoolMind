@@ -10,7 +10,7 @@ import javax.validation.constraints.NotBlank;
 
 @Entity
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
-public class Employee extends User {
+public abstract class Employee extends User {
     @NotBlank
     @Getter @Setter
     private String name;
