@@ -1,4 +1,4 @@
-package com.foolmind.game;
+package com.foolmind.game.controllers;
 
 import com.foolmind.game.model.*;
 import com.foolmind.game.repositories.*;
@@ -13,7 +13,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/dev-test")
-public class HelloWorldController {
+public class DevTestController {
     // injecting dependencies
     @Autowired
     private PlayerRepository playerRepository;
@@ -38,9 +38,14 @@ public class HelloWorldController {
     // get request to populate the database
     @GetMapping("/populate")
     public String populateDB() {
+        for(Player player : playerRepository.findAll()) {
+            player.getGames().clear();
+            playerRepository.save(player);
+        }
+
+        gameRepository.deleteAll();
         playerRepository.deleteAll();
         questionRepository.deleteAll();
-        gameRepository.deleteAll();
         roundRepository.deleteAll();
         adminRepository.deleteAll();
         Player reyaan = new Player.Builder()
@@ -67,15 +72,6 @@ public class HelloWorldController {
 
         Round r1 = new Round(g1, q1, 1);
         roundRepository.save(r1);
-
-        Admin a1 = new Admin.Builder()
-                .email("reyaan@gmail.com")
-                .saltedHashedPassword("password")
-                .name("reyaan")
-                .address("Bangalore")
-                .phoneNumber("123456789")
-                .build();
-        adminRepository.save(a1);
         return "populated";
     }
 
@@ -162,11 +158,4 @@ public class HelloWorldController {
     public Optional<ContentWriter> getcontentWriterById(@PathVariable(name = "id") Long id) {
         return contentWriterRepository.findById(id);
     }
-
-    // Games
-    // Players
-    // Admins
-    // Questions
-    // Rounds
-    // ContentWriters
 }
