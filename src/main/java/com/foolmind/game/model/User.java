@@ -2,6 +2,7 @@ package com.foolmind.game.model;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
@@ -19,10 +20,25 @@ public abstract class User extends Auditable {
     private String email;
 
     @NotBlank
-    @Getter @Setter
+    @Getter
     private String saltedHashedPassword;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @Getter @Setter
     private Set<Role> roles = new HashSet<>();
+
+    public void setSaltedHashedPassword(String val) {
+        this.saltedHashedPassword = new BCryptPasswordEncoder(7).encode(val);
+    }
+
+    // default constructor for spring
+    public User() {
+    }
+
+    // copy constructor
+    public User(User user) {
+        email = user.getEmail();
+        saltedHashedPassword = user.getSaltedHashedPassword();
+        roles = user.getRoles();
+    }
 }
