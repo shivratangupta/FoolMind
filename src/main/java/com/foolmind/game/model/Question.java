@@ -15,7 +15,7 @@ import java.util.Set;
 public class Question extends Auditable {
     @NotBlank
     @Getter @Setter
-    private String question;
+    private String questionText;
 
     @NotBlank
     @Getter @Setter
@@ -36,8 +36,8 @@ public class Question extends Auditable {
     }
 
     // parameterized constructor
-    public Question(@NotBlank String question, @NotBlank String correctAnswer, @NotNull GameMode gameMode) {
-        this.question = question;
+    public Question(@NotBlank String questionText, @NotBlank String correctAnswer, @NotNull GameMode gameMode) {
+        this.questionText = questionText;
         this.correctAnswer = correctAnswer;
         this.gameMode = gameMode;
     }

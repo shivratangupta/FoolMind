@@ -73,4 +73,28 @@ public class Round extends Auditable {
     public boolean allAnswersSubmitted(int numPlayers) {
         return submittedAnswers.size() == numPlayers;
     }
+
+    public void selectAnswer(Player player, PlayerAnswer selectedAnswer) throws InvalidGameRoundActionException {
+        // if player has already submitted answer, then reject
+        if(selectedAnswers.containsKey(player))
+            throw new InvalidGameRoundActionException("Player has already selected an answer for this round");
+
+        // player can't select his own answer
+        if(selectedAnswer.getPlayer().equals(player))
+            throw new InvalidGameRoundActionException("Can't select your own answer");
+
+        // selected answer has to be present in the submitted Answer
+        boolean flag = false;
+        for(PlayerAnswer existingAnswer : submittedAnswers.values()) {
+            if(selectedAnswer.equals(existingAnswer))
+                flag = true;
+        }
+        if(!flag)
+            throw new InvalidGameRoundActionException("selected answer is not present in submitted answer");
+        selectedAnswers.put(player, selectedAnswer);
+    }
+
+    public boolean allAnswersSelected(int numPlayers) {
+        return selectedAnswers.size() == numPlayers;
+    }
 }

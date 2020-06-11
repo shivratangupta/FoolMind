@@ -2,6 +2,7 @@ package com.foolmind.game.model;
 
 import com.fasterxml.jackson.annotation.JsonIdentityReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.foolmind.game.Utils;
 import com.foolmind.game.exceptions.InvalidGameActionException;
 import com.foolmind.game.exceptions.InvalidGameRoundActionException;
 import lombok.Getter;
@@ -91,15 +92,20 @@ public class Game extends Auditable {
         // player has to be leader to start the game
         if(!player.equals(leader))
             throw new InvalidGameActionException("Only user can start the game");
-        createNewRound();
+        startNewRound();
     }
 
-    private void createNewRound() {
+    private void startNewRound() {
         gameStatus = GameStatus.SUBMITTING_ANSWERS;
-        // todo
+        Question question = Utils.getRandomQuestion(gameMode);
+        Round round = new Round(this, question, rounds.size() + 1);
+        if(hasBot)
+            round.setBotAnswer(Utils.getRandomBotAnswer(question));
+        rounds.add(round);
     }
 
-    public void submitAnswer(Player player, String answer) throws InvalidGameActionException, InvalidGameRoundActionException {
+    public void submitAnswer(Player player, String answer) throws InvalidGameActionException,
+            InvalidGameRoundActionException {
         // if answer can not be empty
         if(answer.length() == 0)
             throw new InvalidGameActionException("Answer can not be empty");
@@ -119,15 +125,69 @@ public class Game extends Auditable {
             gameStatus = GameStatus.SELECTING_ANSWERS;
     }
 
-    public void selectAnswer(Player player, PlayerAnswer selectedAnswer) {
+    public void selectAnswer(Player player, PlayerAnswer selectedAnswer) throws InvalidGameActionException,
+            InvalidGameRoundActionException {
+        // player has to be present in the game
+        if(!players.contains(player))
+            throw new InvalidGameActionException("No such player was in the game.");
 
+        // if game status is not submitting answers then player can't select the answer
+        if(!gameStatus.equals(GameStatus.SELECTING_ANSWERS))
+            throw new InvalidGameActionException("Game is not selecting answers at present");
+        Round currentRound = getCurrentRound();
+        currentRound.selectAnswer(player, selectedAnswer);
+
+        // if all the answers are submitted then change the status of the game
+        if(currentRound.allAnswersSelected(players.size())) {
+            // if this round is not a last round then
+            // change game status to waiting for ready otherwise
+            // end the game
+            if(rounds.size() < numRounds)
+                gameStatus = GameStatus.WAITING_FOR_READY;
+            else
+                endGame();
+        }
     }
 
-    private Round getCurrentRound() {
-        // todo
+    public void playerIsReady(Player player) throws InvalidGameActionException {
+        // player has to be present in the game
+        if(!players.contains(player))
+            throw new InvalidGameActionException("No such player was in the game.");
+
+        // if game status is not waiting for ready then player can't be added to ready players
+        if(!gameStatus.equals(GameStatus.WAITING_FOR_READY))
+            throw new InvalidGameActionException("Game is not waiting players to be ready");
+        readyPlayers.add(player);
+
+        // if all players are ready then start a new round
+        if(readyPlayers.size() == players.size())
+            startNewRound();
+    }
+
+    public void playerIsNotReady(Player player) throws InvalidGameActionException {
+        // player has to be present in the game
+        if(!players.contains(player))
+            throw new InvalidGameActionException("No such player was in the game.");
+
+        // if game status is not waiting for ready then player can't be added to ready players
+        if(!gameStatus.equals(GameStatus.WAITING_FOR_READY))
+            throw new InvalidGameActionException("Game is not waiting players to be ready");
+        readyPlayers.remove(player);
+    }
+
+    private Round getCurrentRound() throws InvalidGameActionException {
+        // to get the current round game has to be start
+        if(rounds.size() == 0)
+            throw new InvalidGameActionException("The game has not started");
+        return rounds.get(rounds.size() - 1);
     }
 
     private void endGame() {
+        gameStatus = GameStatus.ENDED;
+    }
+
+    public String getGameState() {
         // todo
+        return "String which contains data which frontend needs";
     }
 }

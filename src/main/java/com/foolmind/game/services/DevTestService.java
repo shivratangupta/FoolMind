@@ -63,7 +63,7 @@ public class DevTestService {
         questionRepository.save(q1);
 
         Game g1 = new Game(GameMode.IS_THIS_A_FACT,
-                reyaan, GameStatus.PLAYERS_JOINING);
+                3, false, reyaan);
         gameRepository.save(g1);
 
         Round r1 = new Round(g1, q1, 1);
