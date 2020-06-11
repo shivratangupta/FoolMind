@@ -2,6 +2,8 @@ package com.foolmind.game.model;
 
 import com.fasterxml.jackson.annotation.JsonIdentityReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.foolmind.game.exceptions.InvalidGameActionException;
+import com.foolmind.game.exceptions.InvalidGameRoundActionException;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -58,9 +60,74 @@ public class Game extends Auditable {
     }
 
     // parameterized constructor
-    public Game(@NotNull GameMode gameMode, @NotNull Player leader, GameStatus gameStatus) {
+    public Game(@NotNull GameMode gameMode, int numRounds, Boolean hasBot, @NotNull Player leader) {
         this.gameMode = gameMode;
+        this.numRounds = numRounds;
+        this.hasBot = hasBot;
         this.leader = leader;
-        this.gameStatus = gameStatus;
+        this.players.add(leader);
+    }
+
+    public void addPlayer(Player player) throws InvalidGameActionException {
+        if(!gameStatus.equals(GameStatus.PLAYERS_JOINING))
+            throw new InvalidGameActionException("Can't join after the game has started");
+        players.add(player);
+    }
+
+    public void removePlayer(Player player) throws InvalidGameActionException {
+        // player has to be in the game to remove from the game
+        if(!players.contains(player))
+            throw new InvalidGameActionException("No such player was in the game.");
+        players.remove(player);
+
+        // if all the player is removed from the game or
+        // if only one player in the game and game status is other then joining then
+        // game is going to end
+        if(players.size() == 0 || (players.size() == 1 && !gameStatus.equals(GameStatus.PLAYERS_JOINING)))
+            endGame();
+    }
+
+    public void startGame(Player player) throws InvalidGameActionException {
+        // player has to be leader to start the game
+        if(!player.equals(leader))
+            throw new InvalidGameActionException("Only user can start the game");
+        createNewRound();
+    }
+
+    private void createNewRound() {
+        gameStatus = GameStatus.SUBMITTING_ANSWERS;
+        // todo
+    }
+
+    public void submitAnswer(Player player, String answer) throws InvalidGameActionException, InvalidGameRoundActionException {
+        // if answer can not be empty
+        if(answer.length() == 0)
+            throw new InvalidGameActionException("Answer can not be empty");
+
+        // player has to be present in the game
+        if(!players.contains(player))
+            throw new InvalidGameActionException("No such player was in the game.");
+
+        // if game status is not submitting answers then player can't submit the answer
+        if(!gameStatus.equals(GameStatus.SUBMITTING_ANSWERS))
+            throw new InvalidGameActionException("Game is not accepting answers at present");
+        Round currentRound = getCurrentRound();
+        currentRound.submitAnswer(player, answer);
+
+        // if all the answers are submitted then change the status of the game
+        if(currentRound.allAnswersSubmitted(players.size()))
+            gameStatus = GameStatus.SELECTING_ANSWERS;
+    }
+
+    public void selectAnswer(Player player, PlayerAnswer selectedAnswer) {
+
+    }
+
+    private Round getCurrentRound() {
+        // todo
+    }
+
+    private void endGame() {
+        // todo
     }
 }
