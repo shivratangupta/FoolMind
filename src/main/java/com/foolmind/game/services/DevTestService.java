@@ -17,13 +17,15 @@ public class DevTestService {
     @Autowired
     private QuestionRepository questionRepository;
     @Autowired
+    private GameRepository gameRepository;
+    @Autowired
+    private GameModeRepository gameModeRepository;
+    @Autowired
+    private RoundRepository roundRepository;
+    @Autowired
     private AdminRepository adminRepository;
     @Autowired
     private ContentWriterRepository contentWriterRepository;
-    @Autowired
-    private GameRepository gameRepository;
-    @Autowired
-    private RoundRepository roundRepository;
     @Autowired
     private UserRepository userRepository;
 
@@ -44,6 +46,8 @@ public class DevTestService {
         questionRepository.deleteAll();
         roundRepository.deleteAll();
         adminRepository.deleteAll();
+        gameModeRepository.deleteAll();
+
         Player reyaan = new Player.Builder()
                 .alias("reyaan")
                 .email("reyaan@gmail.com")
@@ -57,12 +61,18 @@ public class DevTestService {
                 .build();
         playerRepository.save(shriyan);
 
+        GameMode isThisAFact = new GameMode("Is This A Fact?", "", "");
+        gameModeRepository.save(isThisAFact);
+        gameModeRepository.save(new GameMode("Word Up", "", ""));
+        gameModeRepository.save(new GameMode("Un-Scramble", "", ""));
+        gameModeRepository.save(new GameMode("Movie Buff", "", ""));
+
         Question q1 = new Question("what is the most important poneglyph",
                 "Rio Poneglyph",
-                GameMode.IS_THIS_A_FACT);
+                isThisAFact);
         questionRepository.save(q1);
 
-        Game g1 = new Game(GameMode.IS_THIS_A_FACT,
+        Game g1 = new Game(isThisAFact,
                 3, false, reyaan);
         gameRepository.save(g1);
 
