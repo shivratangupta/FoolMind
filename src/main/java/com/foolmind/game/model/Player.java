@@ -37,6 +37,11 @@ public class Player extends User {
     @Getter @Setter
     private Set<Game> games = new HashSet<>();
 
+    @ManyToOne
+    @JsonIdentityReference
+    @Getter @Setter
+    private Game currentGame = null;
+
     // default constructor for spring
     public Player() {
     }
@@ -48,10 +53,6 @@ public class Player extends User {
         setAlias(builder.alias);
         setFoolFaceURL(builder.foolFaceURL);
         setPicURL(builder.picURL);
-    }
-
-    public Game getCurrentGame() {
-        // todo
     }
 
     public static final class Builder {

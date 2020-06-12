@@ -20,12 +20,14 @@ public class Game extends Auditable {
     @Getter @Setter
     private Set<Player> players = new HashSet<>();
 
-    @Getter @Setter
-    @Enumerated(EnumType.STRING)
+    @ManyToOne
+    @JsonIdentityReference
     @NotNull
+    @Getter @Setter
     private GameMode gameMode;
 
     @OneToMany(mappedBy = "game", cascade = CascadeType.ALL)
+    @OrderBy(value = "round_number asc")
     @JsonManagedReference
     @Getter @Setter
     private List<Round> rounds = new ArrayList<>();
@@ -66,20 +68,28 @@ public class Game extends Auditable {
         this.numRounds = numRounds;
         this.hasBot = hasBot;
         this.leader = leader;
-        this.players.add(leader);
+        try {
+            addPlayer(leader);
+        } catch (InvalidGameActionException ignored) {
+        }
     }
 
     public void addPlayer(Player player) throws InvalidGameActionException {
         if(!gameStatus.equals(GameStatus.PLAYERS_JOINING))
             throw new InvalidGameActionException("Can't join after the game has started");
         players.add(player);
+        player.setCurrentGame(this);
     }
 
     public void removePlayer(Player player) throws InvalidGameActionException {
         // player has to be in the game to remove from the game
         if(!players.contains(player))
             throw new InvalidGameActionException("No such player was in the game.");
+
         players.remove(player);
+        // now player has removed from the game then update the current game of the player
+        if(player.getCurrentGame().equals(this))
+            player.setCurrentGame(null);
 
         // if all the player is removed from the game or
         // if only one player in the game and game status is other then joining then
@@ -184,6 +194,10 @@ public class Game extends Auditable {
 
     private void endGame() {
         gameStatus = GameStatus.ENDED;
+        for(Player player : players) {
+            if(player.getCurrentGame().equals(this))
+                player.setCurrentGame(null);
+        }
     }
 
     public String getGameState() {

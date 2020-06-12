@@ -30,11 +30,18 @@ public abstract class Auditable implements Serializable {
     @CreatedDate
     @Column(nullable = false, updatable = false)
     @Getter @Setter
-    private Date createAt = new Date();
+    private Date createdAt = new Date();
 
     @Temporal(TemporalType.TIMESTAMP)
     @LastModifiedDate
     @Column(nullable = false)
     @Getter @Setter
     private Date updatedAt = new Date();
+
+    @Override
+    public boolean equals(Object obj) {
+        if(obj instanceof Auditable)
+            return ((Auditable) obj).getId().equals(getId());
+        return super.equals(obj);
+    }
 }
