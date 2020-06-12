@@ -1,6 +1,5 @@
 package com.foolmind.game.config;
 
-import javafx.application.Application;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
