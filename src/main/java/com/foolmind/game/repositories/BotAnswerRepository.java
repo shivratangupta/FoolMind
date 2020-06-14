@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface BotAnswerRepository extends JpaRepository<BotAnswer, Long> {
 
-    @Query(value = "", nativeQuery = true) // todo
+    // todo
+    @Query(value = "SELECT * FROM botanswers WHERE question=:question ORDER BY RAND() LIMIT 1", nativeQuery = true)
     BotAnswer getRandomBotAnswer(Question question);
 }

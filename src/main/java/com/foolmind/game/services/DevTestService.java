@@ -44,8 +44,6 @@ public class DevTestService {
         gameRepository.deleteAll();
         playerRepository.deleteAll();
         questionRepository.deleteAll();
-        roundRepository.deleteAll();
-        adminRepository.deleteAll();
         gameModeRepository.deleteAll();
 
         Player reyaan = new Player.Builder()
@@ -72,12 +70,11 @@ public class DevTestService {
                 isThisAFact);
         questionRepository.save(q1);
 
-        Game g1 = new Game(isThisAFact,
-                3, false, reyaan);
-        gameRepository.save(g1);
-
-        Round r1 = new Round(g1, q1, 1);
-        roundRepository.save(r1);
+        Game game = new Game();
+        game.setGameMode(isThisAFact);
+        game.setLeader(reyaan);
+        game.getPlayers().add(reyaan);
+        gameRepository.save(game);
         return "populated";
     }
 
