@@ -7,6 +7,8 @@ import com.foolmind.game.exceptions.InvalidGameActionException;
 import com.foolmind.game.exceptions.InvalidGameRoundActionException;
 import lombok.Getter;
 import lombok.Setter;
+import net.minidev.json.JSONArray;
+import net.minidev.json.JSONObject;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -51,7 +53,7 @@ public class Game extends Auditable {
 
     @Enumerated(EnumType.STRING)
     @Getter @Setter
-    private GameStatus gameStatus;
+    private GameStatus gameStatus = GameStatus.PLAYERS_JOINING;
 
     @ManyToMany
     @JsonIdentityReference
@@ -99,6 +101,14 @@ public class Game extends Auditable {
     }
 
     public void startGame(Player player) throws InvalidGameActionException {
+        // player can't start the game if it's already started
+        if(!gameStatus.equals(GameStatus.PLAYERS_JOINING))
+            throw new InvalidGameActionException("The game has already started");
+
+        // can't start a game with single player
+        if(players.size() < 2)
+            throw new InvalidGameActionException("Can't start a game with single player");
+
         // player has to be leader to start the game
         if(!player.equals(leader))
             throw new InvalidGameActionException("Only user can start the game");
@@ -200,8 +210,18 @@ public class Game extends Auditable {
         }
     }
 
-    public String getGameState() {
-        // todo
-        return "String which contains data which frontend needs";
+    public JSONObject getGameState() {
+        JSONObject state = new JSONObject();
+        state.put("id", getId());
+        state.put("numRounds", getNumRounds());
+        state.put("mode", getGameMode().getName());
+        JSONArray playerData = new JSONArray();
+        for(Player player: players) {
+            JSONObject data = new JSONObject();
+            data.put("alias", player.getAlias());
+            playerData.add(data);
+        }
+        state.put("players", playerData);
+        return state;
     }
 }

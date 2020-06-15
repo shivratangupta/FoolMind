@@ -38,6 +38,7 @@ public class DevTestService {
     public String populateDB() {
         for(Player player : playerRepository.findAll()) {
             player.getGames().clear();
+            player.setCurrentGame(null);
             playerRepository.save(player);
         }
 
@@ -59,11 +60,11 @@ public class DevTestService {
                 .build();
         playerRepository.save(shriyan);
 
-        GameMode isThisAFact = new GameMode("Is This A Fact?", "", "");
+        GameMode isThisAFact = new GameMode("Is This A Fact?", "https://thumbor.forbes.com/thumbor/fit-in/1200x0/filters%3Aformat%28jpg%29/https%3A%2F%2Fspecials-images.forbesimg.com%2Fimageserve%2F473329831%2F0x0.jpg%3Ffit%3Dscale", "is this a fact description");
         gameModeRepository.save(isThisAFact);
-        gameModeRepository.save(new GameMode("Word Up", "", ""));
-        gameModeRepository.save(new GameMode("Un-Scramble", "", ""));
-        gameModeRepository.save(new GameMode("Movie Buff", "", ""));
+        gameModeRepository.save(new GameMode("Word Up", "https://thumbor.forbes.com/thumbor/fit-in/1200x0/filters%3Aformat%28jpg%29/https%3A%2F%2Fspecials-images.forbesimg.com%2Fimageserve%2F473329831%2F0x0.jpg%3Ffit%3Dscale", "word up description"));
+        gameModeRepository.save(new GameMode("Un-Scramble", "https://thumbor.forbes.com/thumbor/fit-in/1200x0/filters%3Aformat%28jpg%29/https%3A%2F%2Fspecials-images.forbesimg.com%2Fimageserve%2F473329831%2F0x0.jpg%3Ffit%3Dscale", "unscramble description"));
+        gameModeRepository.save(new GameMode("Movie Buff", "https://thumbor.forbes.com/thumbor/fit-in/1200x0/filters%3Aformat%28jpg%29/https%3A%2F%2Fspecials-images.forbesimg.com%2Fimageserve%2F473329831%2F0x0.jpg%3Ffit%3Dscale", "movie buff description"));
 
         Question q1 = new Question("what is the most important poneglyph",
                 "Rio Poneglyph",

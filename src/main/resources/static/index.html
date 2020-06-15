@@ -4,6 +4,21 @@
     <meta charset="UTF-8">
     <title>Fool Mind</title>
     <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <style>
+        .card {
+            display: inline-block;
+            width: 200px;
+            height: 200px;
+            border: 1px solid black;
+            margin: 1em;
+            padding: 1em;
+            overflow: hidden;
+        }
+        .title {
+            font-size: 200%;
+            text-align: center;
+        }
+    </style>
 </head>
 <body>
 <div id="app">
@@ -11,24 +26,67 @@
         <div class="profile">Profile Info</div>
         <a href="/logout" class="logout">Logout {{ playerAlias }}</a>
     </div>
+
+    <div v-if="currentGame">
+        <div class="section">
+            {{ gameState.id }}
+            {{ gameState.numRounds }}
+            {{ gameState.mode }}
+            {{ gameState }}
+        </div>
+    </div>
+    <div v-else>
+        <div class="section">
+            <div class="heading">Create Game</div>
+            <label for="rounds">Number of Rounds</label>
+            <input type="number" id="rounds" v-model="numRounds">
+
+            <label for="bot">Has Bot?</label>
+            <input type="checkbox" id="bot" v-model="hasBot">
+
+            <div class="cards">
+                <div v-for="mode in gameModes" class="card"
+                     v-on:click="createGame(mode.title)">
+                    <div class="title"> {{ mode.title }} </div>
+                    <img :src="mode.image" alt="">
+                    <div class="description"> {{ mode.description }} </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 <script>
     window.app = new Vue({
         el: '#app',
         data: {
-            playerAlias: ""
+            playerAlias: "",
+            gameModes: [],
+            numRounds: 10,
+            hasBot: false,
+            currentGame: null,
+            gameState: {}
         },
         methods: {
-            getDataFromResponse: function(response) {
+            createGame: function(mode) {
+                fetch('/play/create-game?' + new URLSearchParams({
+                    mode: mode,
+                    rounds: this.numRounds,
+                    bot: this.hasBot
+                })).then(this.updateDataFromResponse);
+            },
+
+            updateDataFromResponse: function(response) {
                 let self = this;
                 response.json().then(function(data) {
                     console.log(data);
-                    self.playerAlias = data.playerAlias;
+                    for(let key in data) {
+                        self[key] = data[key];
+                    }
                 })
             }
         },
         mounted: function() {
-            fetch('/play/').then(this.getDataFromResponse);
+            fetch('/play/').then(this.updateDataFromResponse);
     }
     })
 </script>
