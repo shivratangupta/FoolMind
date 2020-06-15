@@ -59,6 +59,12 @@ public class DevTestService {
                 .saltedHashedPassword("password")
                 .build();
         playerRepository.save(shriyan);
+        Player areana = new Player.Builder()
+                .alias("areana")
+                .email("areana@gmail.com")
+                .saltedHashedPassword("password")
+                .build();
+        playerRepository.save(areana);
 
         GameMode isThisAFact = new GameMode("Is This A Fact?", "https://thumbor.forbes.com/thumbor/fit-in/1200x0/filters%3Aformat%28jpg%29/https%3A%2F%2Fspecials-images.forbesimg.com%2Fimageserve%2F473329831%2F0x0.jpg%3Ffit%3Dscale", "is this a fact description");
         gameModeRepository.save(isThisAFact);
