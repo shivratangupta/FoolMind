@@ -1,5 +1,6 @@
 package com.foolmind.game.controllers;
 
+import com.foolmind.game.exceptions.InvalidGameActionException;
 import com.foolmind.game.model.*;
 import com.foolmind.game.services.DevTestService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +25,7 @@ public class DevTestController {
 
     // get request to populate the database
     @GetMapping("/populate")
-    public String populateDB() {
+    public String populateDB() throws InvalidGameActionException {
         return devTestService.populateDB();
     }
 

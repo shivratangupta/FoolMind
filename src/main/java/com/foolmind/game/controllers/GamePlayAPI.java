@@ -1,5 +1,7 @@
 package com.foolmind.game.controllers;
 
+import com.foolmind.game.exceptions.InvalidGameActionException;
+import com.foolmind.game.exceptions.InvalidGameRoundActionException;
 import com.foolmind.game.model.Game;
 import com.foolmind.game.model.GameMode;
 import com.foolmind.game.model.Player;
@@ -70,5 +72,23 @@ public class GamePlayAPI {
         Optional<GameMode> mode = gameModeRepository.findByName(gameMode);
         gameRepository.save(new Game(mode.get(), numRounds, hasBot, leader));
         return getData(leader);
+    }
+
+    @GetMapping("/reyaan-submit")
+    public String reyaanSubmit() throws InvalidGameRoundActionException, InvalidGameActionException {
+        Optional<Player> reyaan = playerRepository.findByEmail("reyaan@gmail.com");
+        Game game = reyaan.get().getCurrentGame();
+        game.submitAnswer(reyaan.get(), "answer");
+        gameRepository.save(game);
+        return "done";
+    }
+
+    @GetMapping("/shriyan-submit")
+    public String shriyanSubmit() throws InvalidGameRoundActionException, InvalidGameActionException {
+        Optional<Player> shriyan = playerRepository.findByEmail("shriyan@gmail.com");
+        Game game = shriyan.get().getCurrentGame();
+        game.submitAnswer(shriyan.get(), "answer");
+        gameRepository.save(game);
+        return "done";
     }
 }

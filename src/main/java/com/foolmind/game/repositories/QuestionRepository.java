@@ -9,7 +9,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface QuestionRepository extends JpaRepository<Question, Long> {
 
-    // todo
-    @Query(value = "SELECT * FROM questions WHERE gameMode=:gameMode ORDER BY RAND() LIMIT 1", nativeQuery = true)
-    Question getRandomQuestion(GameMode gameMode);
+    @Query(value = "SELECT * FROM questions WHERE game_mode_id=:gameModeId ORDER BY RANDOM() LIMIT 1", nativeQuery = true)
+    Question getRandomQuestion(Long gameModeId);
 }

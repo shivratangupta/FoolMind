@@ -1,12 +1,18 @@
 package com.foolmind.game.services;
 
+import com.foolmind.game.Constants;
+import com.foolmind.game.Pair;
+import com.foolmind.game.Utils;
+import com.foolmind.game.exceptions.InvalidGameActionException;
 import com.foolmind.game.model.*;
 import com.foolmind.game.repositories.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.GetMapping;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -35,7 +41,7 @@ public class DevTestService {
     }
 
     // get request to populate the database
-    public String populateDB() {
+    public String populateDB() throws InvalidGameActionException {
         for(Player player : playerRepository.findAll()) {
             player.getGames().clear();
             player.setCurrentGame(null);
@@ -59,12 +65,6 @@ public class DevTestService {
                 .saltedHashedPassword("password")
                 .build();
         playerRepository.save(shriyan);
-        Player areana = new Player.Builder()
-                .alias("areana")
-                .email("areana@gmail.com")
-                .saltedHashedPassword("password")
-                .build();
-        playerRepository.save(areana);
 
         GameMode isThisAFact = new GameMode("Is This A Fact?", "https://thumbor.forbes.com/thumbor/fit-in/1200x0/filters%3Aformat%28jpg%29/https%3A%2F%2Fspecials-images.forbesimg.com%2Fimageserve%2F473329831%2F0x0.jpg%3Ffit%3Dscale", "is this a fact description");
         gameModeRepository.save(isThisAFact);
@@ -72,16 +72,23 @@ public class DevTestService {
         gameModeRepository.save(new GameMode("Un-Scramble", "https://thumbor.forbes.com/thumbor/fit-in/1200x0/filters%3Aformat%28jpg%29/https%3A%2F%2Fspecials-images.forbesimg.com%2Fimageserve%2F473329831%2F0x0.jpg%3Ffit%3Dscale", "unscramble description"));
         gameModeRepository.save(new GameMode("Movie Buff", "https://thumbor.forbes.com/thumbor/fit-in/1200x0/filters%3Aformat%28jpg%29/https%3A%2F%2Fspecials-images.forbesimg.com%2Fimageserve%2F473329831%2F0x0.jpg%3Ffit%3Dscale", "movie buff description"));
 
-        Question q1 = new Question("what is the most important poneglyph",
-                "Rio Poneglyph",
-                isThisAFact);
-        questionRepository.save(q1);
+        List<Question> questions = new ArrayList<>();
+        for(Map.Entry<String, String> fileMode : Constants.qaFilesMap.entrySet()) {
+            String filename = fileMode.getKey();
+            Optional<GameMode> gameMode = gameModeRepository.findByName(fileMode.getValue());
+            for(Pair<String, String> questionAnswer : Utils.readQAFile(filename)) {
+                questions.add(new Question(questionAnswer.getFirst(), questionAnswer.getSecond(), gameMode.get()));
+            }
+        }
+        questionRepository.saveAll(questions);
 
-        Game game = new Game();
-        game.setGameMode(isThisAFact);
-        game.setLeader(reyaan);
-        game.getPlayers().add(reyaan);
+        Game game = new Game(isThisAFact, 5, true, reyaan);
+        game.addPlayer(shriyan);
         gameRepository.save(game);
+
+        game.startGame(reyaan);
+        gameRepository.save(game);
+
         return "populated";
     }
 

@@ -83,6 +83,10 @@ public class Round extends Auditable {
         if(selectedAnswer.getPlayer().equals(player))
             throw new InvalidGameRoundActionException("Can't select your own answer");
 
+        // if submitted answer is not for this round
+        if(!selectedAnswer.getRound().equals(this))
+            throw new InvalidGameRoundActionException("No such answer was submitted in this round");
+
         // selected answer has to be present in the submitted Answer
         boolean flag = false;
         for(PlayerAnswer existingAnswer : submittedAnswers.values()) {
