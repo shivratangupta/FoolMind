@@ -1,3 +1,5 @@
+Designed and developed a back-end quiz web application using Spring Boot, Hibernate, postgreSQL, Flyway where every user tries to fool other user by giving the similar answer. Here user can login and create a game or join a game using secret code of a particular game. And admin can add or remove employee and employee can add or remove a question.
+
 # Requirements
 
 1. The game should have multiple rounds so user can play multiple times.
