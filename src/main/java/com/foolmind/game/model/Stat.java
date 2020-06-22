@@ -10,10 +10,10 @@ import javax.persistence.Table;
 @Table(name = "stats")
 public class Stat extends Auditable {
     @Getter @Setter
-    private long gotPsychedCount = 0;
+    private long gotFooledCount = 0;
 
     @Getter @Setter
-    private long psychedOthersCount = 0;
+    private long fooledOthersCount = 0;
 
     @Getter @Setter
     private long correctAnswerCount = 0;
