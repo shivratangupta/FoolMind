@@ -58,17 +58,17 @@ public class Utils {
         return botAnswerRepository.getRandomBotAnswer(question.getId());
     }
 
-    public String getSecretCodeFromGameId(Long id) {
+    public static String getSecretCodeFromGameId(Long id) {
         String code = "";
         int base = wordsList.size();
         while(id > 0) {
             code = code + " " + wordsList.get((int) (id % base));
             id /= base;
         }
-        return code.substring(1, code.length());
+        return code.trim();
     }
 
-    public Long getGameIdFromSecretCode(String code) {
+    public static Long getGameIdFromSecretCode(String code) {
         String[] words = code.split(" ");
         long gameId = 0;
         int base = wordsList.size();

@@ -28,38 +28,79 @@ public class GamePlayAPI {
     private GameModeRepository gameModeRepository;
     @Autowired
     private GameRepository gameRepository;
+    private static JSONObject success;
+
+    static {
+        success = new JSONObject();
+        success.put("status", "success");
+    }
+
+    public JSONObject handleCustomException(Exception exception) {
+        JSONObject error = new JSONObject();
+        error.put("status", "error");
+        error.put("errorText", exception.getMessage());
+        return error;
+    }
 
     private Player getCurrentPlayer(Authentication authentication) {
         Optional<Player> player = playerRepository.findByEmail(authentication.getName());
         return player.get();
     }
-
-    private JSONObject getData(Player player) {
-        Game currentGame = player.getCurrentGame();
-        JSONObject response = new JSONObject();
-        response.put("playerAlias", player.getAlias());
-        response.put("currentGame", currentGame == null ? null : currentGame.getId());
-        if(currentGame == null) {
-            JSONArray gameModes = new JSONArray();
-            for (GameMode gameMode : gameModeRepository.findAll()) {
-                JSONObject mode = new JSONObject();
-                mode.put("title", gameMode.getName());
-                mode.put("image", gameMode.getPicture());
-                mode.put("description", gameMode.getDescription());
-                gameModes.add(mode);
-            }
-            response.put("gameModes", gameModes);
+    
+    @GetMapping("/game-modes")
+    public JSONArray gameModes() {
+        JSONArray gameModes = new JSONArray();
+        for (GameMode gameMode : gameModeRepository.findAll()) {
+            JSONObject mode = new JSONObject();
+            mode.put("title", gameMode.getName());
+            mode.put("image", gameMode.getPicture());
+            mode.put("description", gameMode.getDescription());
+            gameModes.add(mode);
         }
-        else {
-            response.put("gameState", currentGame.getGameState());
-        }
-        return response;
+        return gameModes;
     }
 
-    @GetMapping("")
-    public JSONObject play(Authentication authentication) {
-        Player player = getCurrentPlayer(authentication);
-        return getData(player);
+    @GetMapping("/player-data")
+    private JSONObject playerData(Authentication authentication) {
+        return playerData(getCurrentPlayer(authentication));
+    }
+
+    private JSONObject playerData(Player player) {
+        JSONObject data = new JSONObject();
+        data.put("alias", player.getAlias());
+        data.put("picURL", player.getPicURL());
+        data.put("foolFaceURL", player.getFoolFaceURL());
+        data.put("email", player.getEmail());
+        data.put("currentGameId", player.getCurrentGame() == null ? null : player.getCurrentGame().getId());
+        JSONObject stats = new JSONObject();
+        stats.put("correctAnswerCount", player.getStat().getCorrectAnswerCount());
+        stats.put("gotFooledCount", player.getStat().getGotFooledCount());
+        stats.put("fooledOthersCount", player.getStat().getFooledOthersCount());
+        data.put("stats", stats);
+        return data;
+    }
+
+    @GetMapping("/game-state")
+    public JSONObject gameState(Authentication authentication) {
+        return gameState(getCurrentPlayer(authentication).getCurrentGame());
+    }
+
+    public JSONObject gameState(Game game) {
+        JSONObject data = new JSONObject();
+        if(game == null)
+            return data;
+
+        data.put("id", game.getId());
+        data.put("secretCode", game.getSecretCode());
+        data.put("numRounds", game.getNumRounds());
+        data.put("gameMode", game.getGameMode());
+        data.put("hasBot", game.getHasBot());
+        data.put("status", game.getGameState());
+        try {
+            data.put("round", game.getRoundData());
+        } catch (InvalidGameActionException ignored) {
+        }
+        return data;
     }
 
     @GetMapping("/create-game")
@@ -70,7 +111,7 @@ public class GamePlayAPI {
         Player leader = getCurrentPlayer(authentication);
         Optional<GameMode> mode = gameModeRepository.findByName(gameMode);
         gameRepository.save(new Game(mode.get(), numRounds, hasBot, leader));
-        return getData(leader);
+        return playerData(leader);
     }
 
     @GetMapping("/reyaan-submit")

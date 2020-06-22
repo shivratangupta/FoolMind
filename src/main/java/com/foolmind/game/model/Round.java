@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.foolmind.game.exceptions.InvalidGameRoundActionException;
 import lombok.Getter;
 import lombok.Setter;
+import net.minidev.json.JSONObject;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -100,5 +101,10 @@ public class Round extends Auditable {
 
     public boolean allAnswersSelected(int numPlayers) {
         return selectedAnswers.size() == numPlayers;
+    }
+
+    public JSONObject getRoundData() {
+        // todo
+        return null;
     }
 }

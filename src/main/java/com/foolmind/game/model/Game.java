@@ -224,4 +224,12 @@ public class Game extends Auditable {
         state.put("players", playerData);
         return state;
     }
+
+    public String getSecretCode() {
+        return Utils.getSecretCodeFromGameId(getId());
+    }
+
+    public JSONObject getRoundData() throws InvalidGameActionException {
+        return getCurrentRound().getRoundData();
+    }
 }
