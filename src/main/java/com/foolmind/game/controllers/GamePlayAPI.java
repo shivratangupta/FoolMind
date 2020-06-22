@@ -38,8 +38,7 @@ public class GamePlayAPI {
         Game currentGame = player.getCurrentGame();
         JSONObject response = new JSONObject();
         response.put("playerAlias", player.getAlias());
-        response.put("currentGame", currentGame==null?null:currentGame.getId());
-
+        response.put("currentGame", currentGame == null ? null : currentGame.getId());
         if(currentGame == null) {
             JSONArray gameModes = new JSONArray();
             for (GameMode gameMode : gameModeRepository.findAll()) {

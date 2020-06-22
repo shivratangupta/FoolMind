@@ -66,11 +66,11 @@ public class DevTestService {
                 .build();
         playerRepository.save(shriyan);
 
-        GameMode isThisAFact = new GameMode("Is This A Fact?", "https://thumbor.forbes.com/thumbor/fit-in/1200x0/filters%3Aformat%28jpg%29/https%3A%2F%2Fspecials-images.forbesimg.com%2Fimageserve%2F473329831%2F0x0.jpg%3Ffit%3Dscale", "is this a fact description");
+        GameMode isThisAFact = new GameMode("Is This A Fact?", "/images/is_this_a_fact.jpg", "is this a fact description");
         gameModeRepository.save(isThisAFact);
-        gameModeRepository.save(new GameMode("Word Up", "https://thumbor.forbes.com/thumbor/fit-in/1200x0/filters%3Aformat%28jpg%29/https%3A%2F%2Fspecials-images.forbesimg.com%2Fimageserve%2F473329831%2F0x0.jpg%3Ffit%3Dscale", "word up description"));
-        gameModeRepository.save(new GameMode("Un-Scramble", "https://thumbor.forbes.com/thumbor/fit-in/1200x0/filters%3Aformat%28jpg%29/https%3A%2F%2Fspecials-images.forbesimg.com%2Fimageserve%2F473329831%2F0x0.jpg%3Ffit%3Dscale", "unscramble description"));
-        gameModeRepository.save(new GameMode("Movie Buff", "https://thumbor.forbes.com/thumbor/fit-in/1200x0/filters%3Aformat%28jpg%29/https%3A%2F%2Fspecials-images.forbesimg.com%2Fimageserve%2F473329831%2F0x0.jpg%3Ffit%3Dscale", "movie buff description"));
+        gameModeRepository.save(new GameMode("Word Up", "/images/word_up.png", "word up description"));
+        gameModeRepository.save(new GameMode("Un-Scramble", "/images/unscramble.png", "unscramble description"));
+        gameModeRepository.save(new GameMode("Movie Buff", "/images/movie_buff.jpeg", "movie buff description"));
 
         List<Question> questions = new ArrayList<>();
         for(Map.Entry<String, String> fileMode : Constants.qaFilesMap.entrySet()) {
