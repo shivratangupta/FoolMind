@@ -207,22 +207,12 @@ public class Game extends Auditable {
         for(Player player : players) {
             if(player.getCurrentGame().equals(this))
                 player.setCurrentGame(null);
+            Stat oldPlayerStats = player.getStat();
+            Stat deltaPlayerStats = playerStats.get(player);
+            oldPlayerStats.setCorrectAnswerCount(oldPlayerStats.getCorrectAnswerCount() + deltaPlayerStats.getCorrectAnswerCount());
+            oldPlayerStats.setGotFooledCount(oldPlayerStats.getGotFooledCount() + deltaPlayerStats.getGotFooledCount());
+            oldPlayerStats.setFooledOthersCount(oldPlayerStats.getFooledOthersCount() + deltaPlayerStats.getFooledOthersCount());
         }
-    }
-
-    public JSONObject getGameState() {
-        JSONObject state = new JSONObject();
-        state.put("id", getId());
-        state.put("numRounds", getNumRounds());
-        state.put("mode", getGameMode().getName());
-        JSONArray playerData = new JSONArray();
-        for(Player player: players) {
-            JSONObject data = new JSONObject();
-            data.put("alias", player.getAlias());
-            playerData.add(data);
-        }
-        state.put("players", playerData);
-        return state;
     }
 
     public String getSecretCode() {
@@ -231,5 +221,16 @@ public class Game extends Auditable {
 
     public JSONObject getRoundData() throws InvalidGameActionException {
         return getCurrentRound().getRoundData();
+    }
+
+    public void endGame(Player player) throws InvalidGameActionException {
+        // if game is already ended
+        if(gameStatus.equals(GameStatus.ENDED))
+            throw new InvalidGameActionException("The game has already ended");
+
+        // only the leader can end the game
+        if(!player.equals(leader))
+            throw new InvalidGameActionException("Only the leader can end the game");
+        endGame();
     }
 }
