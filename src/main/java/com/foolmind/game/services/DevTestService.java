@@ -76,7 +76,7 @@ public class DevTestService {
                 .email("areana@foolmind.com")
                 .saltedHashedPassword("areana")
                 .build();
-        playerRepository.save(shriyan);
+        playerRepository.save(areana);
         Player ajayesh = new Player.Builder()
                 .alias("ajayesh")
                 .picURL("https://www.anime-planet.com/images/characters/zenitsu-agatsuma-145870.jpg")
@@ -90,7 +90,7 @@ public class DevTestService {
         gameModeRepository.save(isThisAFact);
         gameModeRepository.save(new GameMode("Proverbs", "/images/proverb.jpeg", "A half truth is a whole lie. Take these proverbs and write your own endings. Win a point for every player you fool into thinking your ending is right, then try to pick the real one!"));
         gameModeRepository.save(new GameMode("Animals", "/images/animal.png", "You won't believe these animal facts, because most of them will be made up by you and your friends! Write a fake answer to these real animal facts."));
-        gameModeRepository.save(new GameMode("And Truth Comes Out", "/images/truth.jpeg", "\"If David were arrested tomorrow, it would probably be for this.\" In this mode, you and your friends become the game! Write the best answer about your friends, then choose your favorite answers."));
+        gameModeRepository.save(new GameMode("And Truth Comes Out", "/images/truth.jpg", "\"If David were arrested tomorrow, it would probably be for this.\" In this mode, you and your friends become the game! Write the best answer about your friends, then choose your favorite answers."));
         gameModeRepository.save(new GameMode("Word Up", "/images/word_up.png", "This mode is packed with real definitions to unusual words. Make up a word for each definition and win a point for every player you fool into thinking that your word is correct. Then try to pick the real one!"));
         gameModeRepository.save(new GameMode("Un-Scramble", "/images/unscramble.png", "unscramble description"));
         gameModeRepository.save(new GameMode("Movie Buff", "/images/movie_buff.jpeg", "These movie titles all belong to very real movies. Make up your own plot and win a point for every player you fool into thinking your plot is the correct one. Then try to pick the real movie plot!"));
