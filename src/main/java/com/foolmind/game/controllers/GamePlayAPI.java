@@ -1,12 +1,16 @@
 package com.foolmind.game.controllers;
 
+import com.foolmind.game.Utils;
 import com.foolmind.game.exceptions.InvalidGameActionException;
 import com.foolmind.game.exceptions.InvalidGameRoundActionException;
+import com.foolmind.game.exceptions.InvalidSecretCodeException;
 import com.foolmind.game.model.Game;
 import com.foolmind.game.model.GameMode;
 import com.foolmind.game.model.Player;
+import com.foolmind.game.model.PlayerAnswer;
 import com.foolmind.game.repositories.GameModeRepository;
 import com.foolmind.game.repositories.GameRepository;
+import com.foolmind.game.repositories.PlayerAnswerRepository;
 import com.foolmind.game.repositories.PlayerRepository;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
@@ -28,6 +32,8 @@ public class GamePlayAPI {
     private GameModeRepository gameModeRepository;
     @Autowired
     private GameRepository gameRepository;
+    @Autowired
+    private PlayerAnswerRepository playerAnswerRepository;
     private static JSONObject success;
 
     static {
@@ -95,7 +101,7 @@ public class GamePlayAPI {
         data.put("numRounds", game.getNumRounds());
         data.put("gameMode", game.getGameMode());
         data.put("hasBot", game.getHasBot());
-        data.put("status", game.getGameState());
+        data.put("status", game.getGameStatus());
         try {
             data.put("round", game.getRoundData());
         } catch (InvalidGameActionException ignored) {
@@ -103,32 +109,111 @@ public class GamePlayAPI {
         return data;
     }
 
+    @GetMapping("/leaderboard")
+    public JSONArray leaderboard() {
+        JSONArray data = new JSONArray();
+        for(Player player : playerRepository.findAll()) {
+            JSONObject stats = new JSONObject();
+            stats.put("alias", player.getAlias());
+            stats.put("picURL", player.getPicURL());
+            stats.put("correctAnswerCount", player.getStat().getCorrectAnswerCount());
+            stats.put("gotFooledCount", player.getStat().getGotFooledCount());
+            stats.put("fooledOthersCount", player.getStat().getFooledOthersCount());
+            data.add(stats);
+        }
+
+        return data;
+    }
+
+    @GetMapping("/update-profile")
+    public JSONObject updateProfile(Authentication authentication,
+                                    @RequestParam(name = "alias") String alias,
+                                    @RequestParam(name = "email") String email,
+                                    @RequestParam(name = "fooledFaceURL") String fooledFaceURL,
+                                    @RequestParam(name = "picURL") String picURL) {
+        Player player = getCurrentPlayer(authentication);
+        player.setAlias(alias);
+        player.setEmail(email);
+        player.setFoolFaceURL(fooledFaceURL);
+        player.setPicURL(picURL);
+        return success;
+    }
+
     @GetMapping("/create-game")
     public JSONObject createGame(Authentication authentication,
-                           @RequestParam(name = "mode") String gameMode,
-                           @RequestParam(name = "rounds") Integer numRounds,
-                           @RequestParam(name = "bot") Boolean hasBot) {
+                           @RequestParam(name = "gameMode") String gameMode,
+                           @RequestParam(name = "numRounds") Integer numRounds,
+                           @RequestParam(name = "hasBot") Boolean hasBot) {
         Player leader = getCurrentPlayer(authentication);
         Optional<GameMode> mode = gameModeRepository.findByName(gameMode);
         gameRepository.save(new Game(mode.get(), numRounds, hasBot, leader));
-        return playerData(leader);
+        return success;
     }
 
-    @GetMapping("/reyaan-submit")
-    public String reyaanSubmit() throws InvalidGameRoundActionException, InvalidGameActionException {
-        Optional<Player> reyaan = playerRepository.findByEmail("reyaan@gmail.com");
-        Game game = reyaan.get().getCurrentGame();
-        game.submitAnswer(reyaan.get(), "answer");
-        gameRepository.save(game);
-        return "done";
+    @GetMapping("/join-game")
+    public JSONObject joinGame(Authentication authentication,
+                               @RequestParam(name = "secretCode") String secretCode) throws InvalidSecretCodeException, InvalidGameActionException {
+        Player player = getCurrentPlayer(authentication);
+        Optional<Game> game = gameRepository.findById(Utils.getGameIdFromSecretCode(secretCode));
+        if(!game.isPresent())
+            throw new InvalidSecretCodeException("Secret code " + secretCode + " is invalid");
+        game.get().addPlayer(player);
+        return success;
     }
 
-    @GetMapping("/shriyan-submit")
-    public String shriyanSubmit() throws InvalidGameRoundActionException, InvalidGameActionException {
-        Optional<Player> shriyan = playerRepository.findByEmail("shriyan@gmail.com");
-        Game game = shriyan.get().getCurrentGame();
-        game.submitAnswer(shriyan.get(), "answer");
-        gameRepository.save(game);
-        return "done";
+    @GetMapping("/leave-game")
+    public JSONObject leaveGame(Authentication authentication) throws InvalidGameActionException {
+        Player player = getCurrentPlayer(authentication);
+        player.getCurrentGame().removePlayer(player);
+        return success;
+    }
+
+    @GetMapping("/start-game")
+    public JSONObject startGame(Authentication authentication) throws InvalidGameActionException {
+        Player leader = getCurrentPlayer(authentication);
+        leader.getCurrentGame().startGame(leader);
+        return success;
+    }
+
+    @GetMapping("/end-game")
+    public JSONObject endGame(Authentication authentication) throws InvalidGameActionException {
+        Player leader = getCurrentPlayer(authentication);
+        leader.getCurrentGame().endGame(leader);
+        return success;
+    }
+
+    @GetMapping("/submit-answer")
+    public JSONObject submitAnswer(Authentication authentication,
+                                   @RequestParam(name = "answer") String answer) throws InvalidGameRoundActionException, InvalidGameActionException {
+        Player player = getCurrentPlayer(authentication);
+        Game game = player.getCurrentGame();
+        game.submitAnswer(player, answer);
+        return success;
+    }
+
+    @GetMapping("/select-answer")
+    public JSONObject selectAnswer(Authentication authentication,
+                                   @RequestParam(name = "playerAnswerId") Long playerAnswerId) throws InvalidGameRoundActionException, InvalidGameActionException {
+        Player player = getCurrentPlayer(authentication);
+        Game game = player.getCurrentGame();
+        Optional<PlayerAnswer> playerAnswer = playerAnswerRepository.findById(playerAnswerId);
+        game.selectAnswer(player, playerAnswer.get());
+        return success;
+    }
+
+    @GetMapping("/player-ready")
+    public JSONObject playerReady(Authentication authentication) throws InvalidGameActionException {
+        Player player = getCurrentPlayer(authentication);
+        Game game = player.getCurrentGame();
+        game.playerIsReady(player);
+        return success;
+    }
+
+    @GetMapping("/player-not-ready")
+    public JSONObject playerNotReady(Authentication authentication) throws InvalidGameActionException {
+        Player player = getCurrentPlayer(authentication);
+        Game game = player.getCurrentGame();
+        game.playerIsNotReady(player);
+        return success;
     }
 }
