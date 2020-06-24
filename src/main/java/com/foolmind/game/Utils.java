@@ -72,8 +72,8 @@ public class Utils {
         String[] words = code.split(" ");
         long gameId = 0;
         int base = wordsList.size();
-        for(String word : words) {
-            gameId = gameId * base + wordsIndices.get(word);
+        for(int i=words.length-1; i>=0; i--) {
+            gameId = gameId * base + wordsIndices.get(words[i]);
         }
         return gameId;
     }

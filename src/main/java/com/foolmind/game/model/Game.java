@@ -219,8 +219,8 @@ public class Game extends Auditable {
         return Utils.getSecretCodeFromGameId(getId());
     }
 
-    public JSONObject getRoundData() throws InvalidGameActionException {
-        return getCurrentRound().getRoundData();
+    public JSONObject roundData() throws InvalidGameActionException {
+        return getCurrentRound().roundData();
     }
 
     public void endGame(Player player) throws InvalidGameActionException {

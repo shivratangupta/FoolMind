@@ -62,6 +62,7 @@ window.app = new Vue({
             gameMode: "",
             hasBot: false,
             status: "",
+            numPlayers: 0,
             round: ""
         },
         createGameData: {
@@ -74,7 +75,7 @@ window.app = new Vue({
         profileEditData: {
             alias: "",
             picURL: "",
-            fooledFaceURL: "",
+            foolFaceURL: "",
             email: ""
         },
         errorText: ""
@@ -92,7 +93,7 @@ window.app = new Vue({
                 .then(response => response.json())
                 .then(playerData => {
                     this.player = playerData;
-                    this.profileEditData.fooledFaceURL = playerData.fooledFaceURL;
+                    this.profileEditData.foolFaceURL = playerData.foolFaceURL;
                     this.profileEditData.alias = playerData.alias;
                     this.profileEditData.picURL = playerData.picURL;
                     this.profileEditData.email = playerData.email;
@@ -125,8 +126,8 @@ window.app = new Vue({
                 alias: this.profileEditData.alias,
                 email: this.profileEditData.email,
                 picURL: this.profileEditData.picURL,
-                fooledFaceURL: this.profileEditData.fooledFaceURL
-            })).then(this.setError).then(this.fetchPlayerData);
+                foolFaceURL: this.profileEditData.foolFaceURL
+            })).then(response => response.json()).then(this.setError).then(this.fetchPlayerData);
         },
         calculateScore: function(stats) {
             return stats.correctAnswerCount * 2 + stats.fooledOthersCount - stats.gotFooledCount;
@@ -136,12 +137,12 @@ window.app = new Vue({
                 gameMode: gameMode,
                 numRounds: this.createGameData.numRounds,
                 hasBot: this.createGameData.hasBot
-            })).then(this.setError).then(this.fetchPlayerData).then(this.fetchGameState);
+            })).then(response => response.json()).then(this.setError).then(this.fetchPlayerData).then(this.fetchGameState);
         },
         joinGame: function(gameMode) {
             fetch('/play/join-game?' + new URLSearchParams({
                 secretCode: this.joinGameData.secretCode
-            })).then(this.setError).then(this.fetchPlayerData).then(this.fetchGameState);
+            })).then(response => response.json()).then(this.setError).then(this.fetchPlayerData).then(this.fetchGameState);
         }
     },
     mounted: function() {

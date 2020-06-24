@@ -95,15 +95,15 @@ public class GamePlayAPI {
         JSONObject data = new JSONObject();
         if(game == null)
             return data;
-
         data.put("id", game.getId());
         data.put("secretCode", game.getSecretCode());
         data.put("numRounds", game.getNumRounds());
         data.put("gameMode", game.getGameMode());
         data.put("hasBot", game.getHasBot());
         data.put("status", game.getGameStatus());
+        data.put("numPlayers", game.getPlayers().size());
         try {
-            data.put("round", game.getRoundData());
+            data.put("round", game.roundData());
         } catch (InvalidGameActionException ignored) {
         }
         return data;
@@ -121,7 +121,6 @@ public class GamePlayAPI {
             stats.put("fooledOthersCount", player.getStat().getFooledOthersCount());
             data.add(stats);
         }
-
         return data;
     }
 
@@ -129,13 +128,14 @@ public class GamePlayAPI {
     public JSONObject updateProfile(Authentication authentication,
                                     @RequestParam(name = "alias") String alias,
                                     @RequestParam(name = "email") String email,
-                                    @RequestParam(name = "fooledFaceURL") String fooledFaceURL,
+                                    @RequestParam(name = "foolFaceURL") String foolFaceURL,
                                     @RequestParam(name = "picURL") String picURL) {
         Player player = getCurrentPlayer(authentication);
         player.setAlias(alias);
         player.setEmail(email);
-        player.setFoolFaceURL(fooledFaceURL);
+        player.setFoolFaceURL(foolFaceURL);
         player.setPicURL(picURL);
+        playerRepository.save(player);
         return success;
     }
 
@@ -158,6 +158,7 @@ public class GamePlayAPI {
         if(!game.isPresent())
             throw new InvalidSecretCodeException("Secret code " + secretCode + " is invalid");
         game.get().addPlayer(player);
+        gameRepository.save(game.get());
         return success;
     }
 

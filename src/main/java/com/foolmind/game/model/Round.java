@@ -103,7 +103,7 @@ public class Round extends Auditable {
         return selectedAnswers.size() == numPlayers;
     }
 
-    public JSONObject getRoundData() {
+    public JSONObject roundData() {
         // todo
         return null;
     }
