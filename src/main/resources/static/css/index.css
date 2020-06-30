@@ -148,10 +148,17 @@ hr {
     font-size: 1rem;
 }
 
-.profile {
+.profile, .game-info {
     font-size: 1.5rem;
     text-align: center;
     padding: 1em;
+}
+
+.game-info-row {
+    align-items: center;
+    height: 60px;
+    margin: auto;
+    position: relative;
 }
 
 .profile-row {
@@ -161,10 +168,6 @@ hr {
     width: 80%;
     margin: auto;
     position: relative;
-}
-
-.profile-row label {
-    margin: 1em;
 }
 
 .profile-row input {

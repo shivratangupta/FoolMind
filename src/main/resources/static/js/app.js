@@ -63,7 +63,12 @@ window.app = new Vue({
             hasBot: false,
             status: "",
             numPlayers: 0,
-            round: ""
+            round: {
+                roundId: null,
+                roundNumber: 0,
+                questionText: "",
+                correctAnswer: "",
+            }
         },
         createGameData: {
             hasBot: false,
@@ -77,6 +82,9 @@ window.app = new Vue({
             picURL: "",
             foolFaceURL: "",
             email: ""
+        },
+        submitAnswerData: {
+            answer: ""
         },
         errorText: ""
     },
@@ -143,6 +151,15 @@ window.app = new Vue({
             fetch('/play/join-game?' + new URLSearchParams({
                 secretCode: this.joinGameData.secretCode
             })).then(response => response.json()).then(this.setError).then(this.fetchPlayerData).then(this.fetchGameState);
+        },
+        startGame: function () {
+            fetch('/play/start-game')
+                .then(response => response.json()).then(this.setError).then(this.fetchGameState);
+        },
+        submitAnswer: function () {
+            fetch('/play/submit-answer?' + new URLSearchParams({
+                answer: this.submitAnswerData.answer
+            })).then(response => response.json()).then(this.setError).then(this.fetchGameState);
         }
     },
     mounted: function() {

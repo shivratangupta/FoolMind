@@ -17,11 +17,50 @@
     <hr>
 
     <div v-if="page === 'play'" class="play">
-        <div v-if="player.currentGameId" class="section">
-            {{ gameState.id }}
-            {{ gameState.numRounds }}
-            {{ gameState.gameMode }}
-            {{ gameState }}
+        <div v-if="player.currentGameId && gameState.status === 'PLAYERS_JOINING'" class="game-info">
+            <div class="section start">
+                <div class="heading">Start Game</div>
+                <div class="game-info-row">
+                    <label>Game ID</label>
+                    <span>{{ gameState.id }}</span>
+                </div>
+                <div class="game-info-row">
+                    <label>Game Status</label>
+                    <span>{{ gameState.status }}</span>
+                </div>
+                <div class="game-info-row">
+                    <label>Secret Code</label>
+                    <span>{{ gameState.secretCode }}</span>
+                </div>
+                <div class="game-info-row">
+                    <label>Has Bot?</label>
+                    <span>{{ gameState.hasBot }}</span>
+                </div>
+                <div class="game-info-row">
+                    <label>Number of Rounds</label>
+                    <span>{{ gameState.numRounds }}</span>
+                </div>
+                <div class="game-info-row">
+                    <label>Number of Players</label>
+                    <span>{{ gameState.numPlayers }}</span>
+                </div>
+                <div class="button" v-on:click="startGame()">Start</div>
+            </div>
+        </div>
+        <div v-else-if="gameState.status === 'SUBMITTING_ANSWERS'">
+            <div class="section submit-answer">
+                <div class="heading"> Round - {{ gameState.roundData.roundNumber }}</div>
+                <h1>Question</h1>
+                {{ gameState.roundData.questionText }} <br>
+                <input type="text" v-model="submitAnswerData.answer" v-on:keyup.enter="submitAnswer()">
+                <div class="button" v-on:click="submitAnswer()">Submit</div>
+            </div>
+        </div>
+        <div v-else-if="gameState.status === 'SELECTING_ANSWERS'">
+            <div class="section select-answer">
+                <div class="heading"> Round - {{ gameState.roundData.roundNumber }}</div>
+                <input type="radio" v-model="">
+            </div>
         </div>
         <div v-else>
             <div class="section create">

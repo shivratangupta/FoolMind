@@ -8,10 +8,7 @@ import com.foolmind.game.model.Game;
 import com.foolmind.game.model.GameMode;
 import com.foolmind.game.model.Player;
 import com.foolmind.game.model.PlayerAnswer;
-import com.foolmind.game.repositories.GameModeRepository;
-import com.foolmind.game.repositories.GameRepository;
-import com.foolmind.game.repositories.PlayerAnswerRepository;
-import com.foolmind.game.repositories.PlayerRepository;
+import com.foolmind.game.repositories.*;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +31,9 @@ public class GamePlayAPI {
     private GameRepository gameRepository;
     @Autowired
     private PlayerAnswerRepository playerAnswerRepository;
+    @Autowired
+    private RoundRepository roundRepository;
+
     private static JSONObject success;
 
     static {
@@ -103,7 +103,7 @@ public class GamePlayAPI {
         data.put("status", game.getGameStatus());
         data.put("numPlayers", game.getPlayers().size());
         try {
-            data.put("round", game.roundData());
+            data.put("roundData", game.roundData());
         } catch (InvalidGameActionException ignored) {
         }
         return data;
@@ -173,6 +173,7 @@ public class GamePlayAPI {
     public JSONObject startGame(Authentication authentication) throws InvalidGameActionException {
         Player leader = getCurrentPlayer(authentication);
         leader.getCurrentGame().startGame(leader);
+        gameRepository.save(leader.getCurrentGame());
         return success;
     }
 
@@ -189,6 +190,7 @@ public class GamePlayAPI {
         Player player = getCurrentPlayer(authentication);
         Game game = player.getCurrentGame();
         game.submitAnswer(player, answer);
+        gameRepository.save(game);
         return success;
     }
 

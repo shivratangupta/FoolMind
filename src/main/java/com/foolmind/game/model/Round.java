@@ -3,6 +3,7 @@ package com.foolmind.game.model;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIdentityReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.foolmind.game.exceptions.InvalidGameActionException;
 import com.foolmind.game.exceptions.InvalidGameRoundActionException;
 import lombok.Getter;
 import lombok.Setter;
@@ -103,8 +104,14 @@ public class Round extends Auditable {
         return selectedAnswers.size() == numPlayers;
     }
 
-    public JSONObject roundData() {
-        // todo
-        return null;
+    public JSONObject roundData() throws InvalidGameActionException {
+        if(game.getGameStatus().equals(GameStatus.PLAYERS_JOINING))
+            return null;
+        JSONObject roundData = new JSONObject();
+        roundData.put("roundId", getId());
+        roundData.put("roundNumber", getRoundNumber());
+        roundData.put("questionText", question.getQuestionText());
+        roundData.put("correctAnswer", question.getCorrectAnswer());
+        return roundData;
     }
 }

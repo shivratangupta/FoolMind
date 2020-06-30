@@ -195,7 +195,7 @@ public class Game extends Auditable {
         readyPlayers.remove(player);
     }
 
-    private Round getCurrentRound() throws InvalidGameActionException {
+    public Round getCurrentRound() throws InvalidGameActionException {
         // to get the current round game has to be start
         if(rounds.size() == 0)
             throw new InvalidGameActionException("The game has not started");
