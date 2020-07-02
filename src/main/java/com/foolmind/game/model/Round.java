@@ -7,6 +7,7 @@ import com.foolmind.game.exceptions.InvalidGameActionException;
 import com.foolmind.game.exceptions.InvalidGameRoundActionException;
 import lombok.Getter;
 import lombok.Setter;
+import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 
 import javax.persistence.*;
@@ -91,13 +92,17 @@ public class Round extends Auditable {
 
         // selected answer has to be present in the submitted Answer
         boolean flag = false;
+        Player submittedPlayer = null;
         for(PlayerAnswer existingAnswer : submittedAnswers.values()) {
-            if(selectedAnswer.equals(existingAnswer))
+            if(selectedAnswer.equals(existingAnswer)) {
                 flag = true;
+                submittedPlayer = existingAnswer.getPlayer();
+            }
         }
         if(!flag)
             throw new InvalidGameRoundActionException("selected answer is not present in submitted answer");
         selectedAnswers.put(player, selectedAnswer);
+        game.updateStat(submittedPlayer, selectedAnswer, question.getCorrectAnswer());
     }
 
     public boolean allAnswersSelected(int numPlayers) {
@@ -110,8 +115,26 @@ public class Round extends Auditable {
         JSONObject roundData = new JSONObject();
         roundData.put("roundId", getId());
         roundData.put("roundNumber", getRoundNumber());
+
+        JSONArray submittedData = getAnswersData(submittedAnswers);
+        roundData.put("submittedAnswers", submittedData);
+
+        JSONArray selectedData = getAnswersData(selectedAnswers);
+        roundData.put("selectedAnswers", selectedData);
         roundData.put("questionText", question.getQuestionText());
         roundData.put("correctAnswer", question.getCorrectAnswer());
         return roundData;
+    }
+
+    private JSONArray getAnswersData(Map<Player, PlayerAnswer> answers) {
+        JSONArray response = new JSONArray();
+        for(PlayerAnswer playerAnswer : answers.values()) {
+            JSONObject data = new JSONObject();
+            data.put("alias", playerAnswer.getPlayer().getAlias());
+            data.put("playerAnswerId", playerAnswer.getId());
+            data.put("playerAnswer", playerAnswer.getAnswer());
+            response.add(data);
+        }
+        return response;
     }
 }

@@ -59,7 +59,24 @@
         <div v-else-if="gameState.status === 'SELECTING_ANSWERS'">
             <div class="section select-answer">
                 <div class="heading"> Round - {{ gameState.roundData.roundNumber }}</div>
-                <input type="radio" v-model="">
+                <div v-for="row in gameState.roundData.submittedAnswers">
+                    <input type="radio" :value="row.playerAnswerId" v-model="selectAnswerData.playerAnswerId">
+                    <label> {{row.playerAnswer}} </label> <br>
+                </div>
+                <div class="button" v-on:click="selectAnswer()">Submit</div>
+            </div>
+        </div>
+        <div v-else-if="gameState.status === 'WAITING_FOR_READY'">
+            <div class="section waiting">
+                <div class="game-info-row">
+                    <label>Number of Players</label>
+                    <span>{{ gameState.numPlayers }}</span>
+                </div>
+                <div class="game-info-row">
+                    <label>Number of Ready Players</label>
+                    <span>{{ gameState.numReadyPlayers }}</span>
+                </div>
+                <div class="button" v-on:click="playerReady()">Ready</div>
             </div>
         </div>
         <div v-else>

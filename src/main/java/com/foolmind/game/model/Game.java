@@ -162,8 +162,10 @@ public class Game extends Auditable {
             // if this round is not a last round then
             // change game status to waiting for ready otherwise
             // end the game
-            if(rounds.size() < numRounds)
+            if(rounds.size() < numRounds) {
+                readyPlayers.clear();
                 gameStatus = GameStatus.WAITING_FOR_READY;
+            }
             else
                 endGame();
         }
@@ -232,5 +234,22 @@ public class Game extends Auditable {
         if(!player.equals(leader))
             throw new InvalidGameActionException("Only the leader can end the game");
         endGame();
+    }
+
+    public void updateStat(Player submittedPlayer, PlayerAnswer selectedAnswer, String correctAnswer) {
+        Player selectedPlayer = selectedAnswer.getPlayer();
+        if(!playerStats.containsKey(selectedPlayer))
+            playerStats.put(selectedPlayer, new Stat());
+        if(!playerStats.containsKey(submittedPlayer))
+            playerStats.put(submittedPlayer, new Stat());
+
+        Stat selectedPlayerStat = playerStats.get(selectedPlayer);
+        Stat submittedPlayerStat = playerStats.get(submittedPlayer);
+        if(selectedAnswer.getAnswer().equals(correctAnswer))
+            selectedPlayerStat.setCorrectAnswerCount(selectedPlayerStat.getCorrectAnswerCount() + 1);
+        else {
+            selectedPlayerStat.setGotFooledCount(selectedPlayerStat.getGotFooledCount() + 1);
+            submittedPlayerStat.setFooledOthersCount(submittedPlayerStat.getFooledOthersCount() + 1);
+        }
     }
 }

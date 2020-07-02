@@ -63,9 +63,24 @@ window.app = new Vue({
             hasBot: false,
             status: "",
             numPlayers: 0,
-            round: {
+            numReadyPlayers: 0,
+            roundData: {
                 roundId: null,
                 roundNumber: 0,
+                submittedAnswers: [
+                    {
+                        alias: "",
+                        playerAnswerId: null,
+                        playerAnswer: ""
+                    }
+                ],
+                selectedAnswers: [
+                    {
+                        alias: "",
+                        playerAnswerId: null,
+                        playerAnswer: ""
+                    }
+                ],
                 questionText: "",
                 correctAnswer: "",
             }
@@ -85,6 +100,9 @@ window.app = new Vue({
         },
         submitAnswerData: {
             answer: ""
+        },
+        selectAnswerData: {
+            playerAnswerId: null
         },
         errorText: ""
     },
@@ -160,6 +178,15 @@ window.app = new Vue({
             fetch('/play/submit-answer?' + new URLSearchParams({
                 answer: this.submitAnswerData.answer
             })).then(response => response.json()).then(this.setError).then(this.fetchGameState);
+        },
+        selectAnswer: function () {
+            fetch('/play/select-answer?' + new URLSearchParams({
+                playerAnswerId: this.selectAnswerData.playerAnswerId
+            })).then(response => response.json()).then(this.setError).then(this.fetchGameState);
+        },
+        playerReady: function () {
+            fetch('/play/player-ready')
+                .then(response => response.json()).then(this.setError).then(this.fetchGameState);
         }
     },
     mounted: function() {

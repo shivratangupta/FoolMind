@@ -102,6 +102,7 @@ public class GamePlayAPI {
         data.put("hasBot", game.getHasBot());
         data.put("status", game.getGameStatus());
         data.put("numPlayers", game.getPlayers().size());
+        data.put("numReadyPlayers", game.getReadyPlayers().size());
         try {
             data.put("roundData", game.roundData());
         } catch (InvalidGameActionException ignored) {
@@ -201,6 +202,7 @@ public class GamePlayAPI {
         Game game = player.getCurrentGame();
         Optional<PlayerAnswer> playerAnswer = playerAnswerRepository.findById(playerAnswerId);
         game.selectAnswer(player, playerAnswer.get());
+        gameRepository.save(game);
         return success;
     }
 
@@ -209,6 +211,7 @@ public class GamePlayAPI {
         Player player = getCurrentPlayer(authentication);
         Game game = player.getCurrentGame();
         game.playerIsReady(player);
+        gameRepository.save(game);
         return success;
     }
 
