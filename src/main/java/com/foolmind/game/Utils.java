@@ -31,10 +31,11 @@ public class Utils {
                 .getApplicationContext()
                 .getBean("botAnswerRepository");
 
+        wordsList = new ArrayList<>();
+        wordsIndices = new HashMap<>();
+
         try {
             BufferedReader br = new BufferedReader(new FileReader(ResourceUtils.getFile("classpath:data/words.txt")));
-            wordsList = new ArrayList<>();
-            wordsIndices = new HashMap<>();
             String word = br.readLine();
             int index = 0;
             while(word != null) {
