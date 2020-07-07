@@ -20,6 +20,7 @@ import java.util.Map;
 public class Utils {
     private static QuestionRepository questionRepository;
     private static BotAnswerRepository botAnswerRepository;
+    private static String wordsFile;
     private static List<String> wordsList;
     private static Map<String, Integer> wordsIndices;
 
@@ -31,11 +32,12 @@ public class Utils {
                 .getApplicationContext()
                 .getBean("botAnswerRepository");
 
-        wordsList = new ArrayList<>();
-        wordsIndices = new HashMap<>();
+        wordsFile = "classpath:data/words.txt";
 
         try {
-            BufferedReader br = new BufferedReader(new FileReader(ResourceUtils.getFile("classpath:data/words.txt")));
+            BufferedReader br = new BufferedReader(new FileReader(ResourceUtils.getFile(wordsFile)));
+            wordsList = new ArrayList<>();
+            wordsIndices = new HashMap<>();
             String word = br.readLine();
             int index = 0;
             while(word != null) {
