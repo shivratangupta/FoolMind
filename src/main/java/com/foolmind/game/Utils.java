@@ -33,18 +33,17 @@ public class Utils {
 
         try {
             BufferedReader br = new BufferedReader(new FileReader(ResourceUtils.getFile("classpath:data/words.txt")));
-            String word;
             wordsList = new ArrayList<>();
             wordsIndices = new HashMap<>();
+            String word = br.readLine();
             int index = 0;
-            do {
-                word = br.readLine();
-                if(word == null) break;
+            while(word != null) {
                 word = word.trim();
                 wordsList.add(word);
                 wordsIndices.put(word, index);
+                word = br.readLine();
                 index++;
-            }while(word != null);
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -83,14 +82,15 @@ public class Utils {
         int count = 0;
         try {
             BufferedReader br = new BufferedReader(new FileReader(ResourceUtils.getFile(filename)));
-            String questionText, correctAnswer;
-            do {
-                questionText = br.readLine();
-                correctAnswer = br.readLine();
+            String questionText = br.readLine();
+            String correctAnswer = br.readLine();
+            while (questionText != null && count < Constants.MAX_QUESTIONS_TO_READ) {
                 if(questionText == null || correctAnswer == null) break;
                 questionAnswers.add(new Pair(questionText.trim(), correctAnswer.trim()));
+                questionText = br.readLine();
+                correctAnswer = br.readLine();
                 count++;
-            } while (questionText != null && count < Constants.MAX_QUESTIONS_TO_READ);
+            }
         } catch (IOException ignored) {
         }
         return questionAnswers;
